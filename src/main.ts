@@ -1,5 +1,5 @@
 import './style.css'
-import { setupScene } from './rendering.ts';
+import { render, setupScene } from './rendering.ts';
 import { setupGUI } from './ui.ts';
 import { setupControls } from './input.ts';
 
@@ -9,6 +9,8 @@ const sceneData = setupScene();
 // GUI setup
 setupGUI(sceneData);
 
-// Input setup
+// input setup
 setupControls(sceneData);
 
+// start render loop
+render(sceneData);
