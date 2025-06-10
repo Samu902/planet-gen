@@ -1,15 +1,14 @@
 import * as THREE from 'three';
-import { getPlanet as createPlanet } from './planet';
+import { generatePlanet, type PlanetData } from './planet';
 
 export interface SceneData {
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
-    planet: THREE.Mesh;
     sky: THREE.Mesh;
 }
 
-export function setupScene(): SceneData {
+export function setupScene(): { sceneData: SceneData, planetData: PlanetData } {
 
     // --- Scene, camera and renderer ---
 
@@ -69,16 +68,17 @@ export function setupScene(): SceneData {
 
     // --- Planet ---
 
-    const planet = createPlanet();
-    scene.add(planet);
-
-    return {
+    const sceneData = {
         scene: scene,
         camera: camera,
         renderer: renderer,
-        planet: planet,
         sky: sky
     };
+
+    const planetData = generatePlanet(sceneData);
+    scene.add(planetData.mesh);
+
+    return { sceneData, planetData };
 }
 
 export function render(sceneData: SceneData): void {

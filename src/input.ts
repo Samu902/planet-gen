@@ -1,5 +1,6 @@
 import { clamp } from 'three/src/math/MathUtils.js';
 import type { SceneData } from './rendering';
+import type { PlanetData } from './planet';
 
 interface InputParams {
     rotateSpeed: number;
@@ -8,7 +9,7 @@ interface InputParams {
     maxZoom: number;
 }
 
-export function setupControls(sceneData: SceneData): void {
+export function setupInput(sceneData: SceneData, planetData: PlanetData): InputParams {
     let params: InputParams = {
         rotateSpeed: 0.005,
         zoomSpeed: 0.25,
@@ -35,8 +36,8 @@ export function setupControls(sceneData: SceneData): void {
             const deltaX = event.clientX - previousMousePosition.x;
             const deltaY = event.clientY - previousMousePosition.y;
 
-            sceneData.planet.rotation.y -= deltaX * params.rotateSpeed;
-            sceneData.planet.rotation.x += deltaY * params.rotateSpeed;
+            planetData.mesh.rotation.y -= deltaX * params.rotateSpeed;
+            planetData.mesh.rotation.x += deltaY * params.rotateSpeed;
 
             previousMousePosition.x = event.clientX;
             previousMousePosition.y = event.clientY;
@@ -52,4 +53,5 @@ export function setupControls(sceneData: SceneData): void {
         event.preventDefault(); // prevent default zoom or scrolling in the window
     });
 
+    return params;
 }

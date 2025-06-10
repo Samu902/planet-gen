@@ -1,16 +1,16 @@
 import './style.css'
 import { render, setupScene } from './rendering.ts';
-import { setupGUI } from './ui.ts';
-import { setupControls } from './input.ts';
+import { setupGUI } from './gui.ts';
+import { setupInput } from './input.ts';
 
 // create scene
-const sceneData = setupScene();
+const { sceneData, planetData } = setupScene();
 
 // GUI setup
-setupGUI(sceneData);
+const guiParams = setupGUI(sceneData, planetData);
 
 // input setup
-setupControls(sceneData);
+const inputParams = setupInput(sceneData, planetData);
 
 // start render loop
 render(sceneData);
