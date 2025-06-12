@@ -30,17 +30,21 @@ export function setupInput(sceneData: SceneData, planetData: PlanetData): InputP
     document.addEventListener('mousedown', () => { isDragging = true; });
     document.addEventListener('mouseup', () => { isDragging = false; });
 
-    // mouse dragging: rotate the planet
+    // mouse dragging: rotate the planet (only when dragging outside GUI)
     document.addEventListener('mousemove', (event: MouseEvent) => {
         if (isDragging) {
-            const deltaX = event.clientX - previousMousePosition.x;
-            const deltaY = event.clientY - previousMousePosition.y;
+            const guiRect = document.getElementsByClassName('lil-gui')[0].getBoundingClientRect();
 
-            planetData.mesh.rotation.y -= deltaX * params.rotateSpeed;
-            planetData.mesh.rotation.x += deltaY * params.rotateSpeed;
-
-            previousMousePosition.x = event.clientX;
-            previousMousePosition.y = event.clientY;
+            if (event.clientX < guiRect.left || event.clientX > guiRect.right || event.clientY < guiRect.top || event.clientY > guiRect.bottom) {
+                const deltaX = event.clientX - previousMousePosition.x;
+                const deltaY = event.clientY - previousMousePosition.y;
+    
+                planetData.mesh.rotation.y -= deltaX * params.rotateSpeed;
+                planetData.mesh.rotation.x += deltaY * params.rotateSpeed;
+    
+                previousMousePosition.x = event.clientX;
+                previousMousePosition.y = event.clientY;
+            }
         }
     });
 
