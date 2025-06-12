@@ -38,7 +38,7 @@ export function generatePlanet(sceneData: SceneData): PlanetData {
         mesh: planet,
         tilingFactor1: 0.25,
         heightFactor1: 0.25,
-        offset1: 2,
+        offset1: 0,
         tilingFactor2: 1,
         heightFactor2: 0.1,
         offset2: 0,
@@ -57,11 +57,28 @@ export function generatePlanet(sceneData: SceneData): PlanetData {
     }
 
     positionAttribute.needsUpdate = true;
-    planet.geometry.computeVertexNormals();
+    data.mesh.geometry.computeVertexNormals();
 
     return data;
 }
 
 export function updatePlanet(planetData: PlanetData) {
-    //...
+    const geometry = new THREE.IcosahedronGeometry(2, 10);
+    planetData.mesh.geometry = geometry;
+
+    const noise = createNoise3D();
+    const positionAttribute = planetData.mesh.geometry.attributes.position;
+    const vertex = new THREE.Vector3();
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+        vertex.fromBufferAttribute(positionAttribute, i);
+        let noiseValue1 = noise(vertex.x * planetData.tilingFactor1 + planetData.offset1, vertex.y * planetData.tilingFactor1 + planetData.offset1, vertex.z * planetData.tilingFactor1 + planetData.offset1);
+        let noiseValue2 = noise(vertex.x * planetData.tilingFactor2 + planetData.offset2, vertex.y * planetData.tilingFactor2 + planetData.offset2, vertex.z * planetData.tilingFactor2 + planetData.offset2);
+        let noiseValue3 = noise(vertex.x * planetData.tilingFactor3 + planetData.offset3, vertex.y * planetData.tilingFactor3 + planetData.offset3, vertex.z * planetData.tilingFactor3 + planetData.offset3);
+        vertex.multiplyScalar(1 + planetData.heightFactor1 * noiseValue1 + planetData.heightFactor2 * noiseValue2 + planetData.heightFactor3 * noiseValue3);
+        positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+    }
+
+    positionAttribute.needsUpdate = true;
+    planetData.mesh.geometry.computeVertexNormals();
 }
