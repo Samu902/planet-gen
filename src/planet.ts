@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { createNoise3D } from 'simplex-noise';
 import type { SceneData } from './rendering';
-import vertexShader from './shaders/vertexShader.glsl?raw'
-import fragmentShader from './shaders/fragmentShader.glsl?raw'
+import vertexShader from './shaders/uv.vert'
+import fragmentShader from './shaders/uv.frag'
 
 export interface PlanetData {
     mesh: THREE.Mesh,
@@ -27,7 +27,7 @@ export function generatePlanet(sceneData: SceneData): PlanetData {
 
     const geometry = new THREE.IcosahedronGeometry(2, 10);
     //const material = new THREE.MeshStandardMaterial({ color: '#ffffff', wireframe: true });
-    const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader });
+    const material = new THREE.RawShaderMaterial({ vertexShader, fragmentShader, glslVersion: THREE.GLSL3 });
 
     const planet = new THREE.Mesh(geometry, material);
     planet.position.set(0, 0, 0);
