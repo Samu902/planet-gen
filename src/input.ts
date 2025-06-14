@@ -1,6 +1,7 @@
 import { clamp } from 'three/src/math/MathUtils.js';
 import type { SceneData } from './rendering';
-import type { PlanetData } from './planet';
+import { Planet } from './planet';
+import { Vector3 } from 'three';
 
 interface InputParams {
     rotateSpeed: number;
@@ -9,13 +10,13 @@ interface InputParams {
     maxZoom: number;
 }
 
-export function setupInput(sceneData: SceneData, planetData: PlanetData): InputParams {
+export function setupInput(sceneData: SceneData, planet: Planet): InputParams {
     let params: InputParams = {
         rotateSpeed: 0.005,
         zoomSpeed: 0.25,
         minZoom: 2.5,
         maxZoom: 15
-    } 
+    }
 
     // document.addEventListener('keydown', (event: KeyboardEvent) => {
     //     switch (event.key) {
@@ -26,11 +27,16 @@ export function setupInput(sceneData: SceneData, planetData: PlanetData): InputP
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
-    // mouse down and up: update dragging boolean
-    document.addEventListener('mousedown', () => { isDragging = true; });
-    document.addEventListener('mouseup', () => { isDragging = false; });
+    // mouse down and up: update dragging boolean and set initial mouse position
+    document.addEventListener('mousedown', (event: MouseEvent) => {
+        isDragging = true;
+        previousMousePosition = { x: event.clientX, y: event.clientY };
+    });
+    document.addEventListener('mouseup', (event: MouseEvent) => {
+        isDragging = false;
+    });
 
-    // mouse dragging: rotate the planet (only when dragging outside GUI)
+    // mouse dragging: world-wisely rotate the planet (only when dragging outside GUI)
     document.addEventListener('mousemove', (event: MouseEvent) => {
         if (isDragging) {
             const guiRect = document.getElementsByClassName('lil-gui')[0].getBoundingClientRect();
@@ -38,10 +44,10 @@ export function setupInput(sceneData: SceneData, planetData: PlanetData): InputP
             if (event.clientX < guiRect.left || event.clientX > guiRect.right || event.clientY < guiRect.top || event.clientY > guiRect.bottom) {
                 const deltaX = event.clientX - previousMousePosition.x;
                 const deltaY = event.clientY - previousMousePosition.y;
-    
-                planetData.mesh.rotation.y -= deltaX * params.rotateSpeed;
-                planetData.mesh.rotation.x += deltaY * params.rotateSpeed;
-    
+
+                planet.mesh = planet.mesh.rotateOnWorldAxis(new Vector3(0, 1, 0), deltaX * params.rotateSpeed);
+                planet.mesh = planet.mesh.rotateOnWorldAxis(new Vector3(1, 0, 0), deltaY * params.rotateSpeed);
+
                 previousMousePosition.x = event.clientX;
                 previousMousePosition.y = event.clientY;
             }

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { generatePlanet, type PlanetData } from './planet';
+import { Planet } from './planet';
 
 export interface SceneData {
     scene: THREE.Scene;
@@ -8,7 +8,7 @@ export interface SceneData {
     sky: THREE.Mesh;
 }
 
-export function setupScene(): { sceneData: SceneData, planetData: PlanetData } {
+export function setupScene(): { sceneData: SceneData, planet: Planet } {
 
     // --- Scene, camera and renderer ---
 
@@ -75,10 +75,10 @@ export function setupScene(): { sceneData: SceneData, planetData: PlanetData } {
         sky: sky
     };
 
-    const planetData = generatePlanet(sceneData);
-    scene.add(planetData.mesh);
+    const planet = new Planet();
+    scene.add(planet.mesh);
 
-    return { sceneData, planetData };
+    return { sceneData, planet };
 }
 
 export function render(sceneData: SceneData): void {
