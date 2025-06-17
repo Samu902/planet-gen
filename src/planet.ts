@@ -5,13 +5,16 @@ import uvVertShader from './shaders/uv.vert';
 import uvFragShader from './shaders/uv.frag';
 import solidVertShader from './shaders/solid.vert';
 import solidFragShader from './shaders/solid.frag';
+import wireframeVertShader from './shaders/wireframe.vert';
+import wireframeFragShader from './shaders/wireframe.frag';
 
-export type ShaderOption = 'uv' | 'solid';
+export type ShaderOption = 'uv' | 'solid' | 'wireframe';
 export type ShaderPair = { vert: string, frag: string };
 
 export const shaders: { [key in ShaderOption]: ShaderPair } = {
     'uv': { vert: uvVertShader, frag: uvFragShader },
-    'solid': { vert: solidVertShader, frag: solidFragShader }
+    'solid': { vert: solidVertShader, frag: solidFragShader },
+    'wireframe': { vert: wireframeVertShader, frag: wireframeFragShader }
 };
 
 export class Planet {
@@ -37,13 +40,14 @@ export class Planet {
         // const loader = new THREE.TextureLoader();
         // const texture = loader.load('/t.jpg');
 
-        //const geometry = new THREE.SphereGeometry(2, 64, 64);
-        //const material = new THREE.MeshStandardMaterial({ color: '#ffffff', map: texture });
         this.radius = radius;
 
         const geometry = new THREE.IcosahedronGeometry(this.radius, 10);
-        //const material = new THREE.MeshStandardMaterial({ color: '#ffffff', wireframe: true });
-        const material = new THREE.RawShaderMaterial({ vertexShader: shaders['uv'].vert, fragmentShader: shaders['uv'].frag, glslVersion: THREE.GLSL3 });
+        const material = new THREE.RawShaderMaterial({
+            vertexShader: shaders[this.shader].vert,
+            fragmentShader: shaders[this.shader].frag,
+            glslVersion: THREE.GLSL3
+        });
 
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(0, 0, 0);
@@ -55,9 +59,6 @@ export class Planet {
 
         for (let i = 0; i < positionAttribute.count; i++) {
             vertex.fromBufferAttribute(positionAttribute, i);
-            //let noiseValue1 = this.noise(vertex.x * this.tilingFactor1 + this.offset1, vertex.y * this.tilingFactor1 + this.offset1, vertex.z * this.tilingFactor1 + this.offset1);
-            //let noiseValue2 = this.noise(vertex.x * this.tilingFactor2 + this.offset2, vertex.y * this.tilingFactor2 + this.offset2, vertex.z * this.tilingFactor2 + this.offset2);
-            //let noiseValue3 = this.noise(vertex.x * this.tilingFactor3 + this.offset3, vertex.y * this.tilingFactor3 + this.offset3, vertex.z * this.tilingFactor3 + this.offset3);
             let noiseValue1 = this.noise(...vertex.multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
             let noiseValue2 = this.noise(...vertex.multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
             let noiseValue3 = this.noise(...vertex.multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
@@ -73,7 +74,39 @@ export class Planet {
 
         //const geometry = new THREE.IcosahedronGeometry(2, 10);
         //this.mesh.geometry = geometry;
-        this.mesh.material = new THREE.RawShaderMaterial({ vertexShader: shaders[this.shader].vert, fragmentShader: shaders[this.shader].frag, glslVersion: THREE.GLSL3 });
+        switch (this.shader) {
+            case 'solid':
+                this.mesh.material = new THREE.RawShaderMaterial({
+                    vertexShader: shaders[this.shader].vert,
+                    fragmentShader: shaders[this.shader].frag,
+                    glslVersion: THREE.GLSL3,
+                    uniforms: {
+                        customColor: { value: new THREE.Color(0xff0000) }
+                    }
+                });
+                break;
+            case 'wireframe':
+                this.mesh.material = new THREE.RawShaderMaterial({
+                    vertexShader: shaders[this.shader].vert,
+                    fragmentShader: shaders[this.shader].frag,
+                    glslVersion: THREE.GLSL3,
+                    depthTest: false,
+                    transparent: true,
+                    uniforms: {
+                        wireframeColor: { value: new THREE.Color(0xff0000) },
+                        thickness: { value: 0.1 }
+                    }
+                });
+                this.mesh.material = new THREE.MeshStandardMaterial({ color: '#ffffff', wireframe: true });
+                break;
+            default:
+                this.mesh.material = new THREE.RawShaderMaterial({
+                    vertexShader: shaders[this.shader].vert,
+                    fragmentShader: shaders[this.shader].frag,
+                    glslVersion: THREE.GLSL3
+                });
+                break;
+        }
 
         const positionAttribute = this.mesh.geometry.attributes.position;
         const vertex = new THREE.Vector3();
