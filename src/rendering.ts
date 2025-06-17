@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Planet } from './planet';
+import spaceBackground from './assets/space.png';
 
 export interface SceneData {
     scene: THREE.Scene;
@@ -53,7 +54,7 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
 
     // load tiled space texture
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('/space.png');
+    const texture = loader.load(spaceBackground);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(7, 5);
