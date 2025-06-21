@@ -6,6 +6,7 @@ import { Planet, shaders, type ShaderOption } from './planet';
 interface GUIParams {
     camera_position: Vector3;
     rotateSpeed: number;
+    sunPosition: Vector3;
     // > planet params
     // >> geometry
     tilingFactor1: number,
@@ -25,7 +26,8 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
     const gui = new GUI();
     const params: GUIParams = {
         camera_position: new Vector3(0, 5, 10),
-        rotateSpeed: 0.0005,
+        rotateSpeed: sceneData.skySpeed,
+        sunPosition: sceneData.sunLight.position,
         // > planet params
         // >> geometry
         tilingFactor1: planet.tilingFactor1,
@@ -46,6 +48,19 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
     });
 
     gui.add(params, 'rotateSpeed', 0, 0.01);
+    const sunPositionGui = gui.addFolder('Sun position');
+    sunPositionGui.add(params.sunPosition, 'x', -20, 20).onChange((value: number) => {
+        sceneData.sunLight.position.x = value;
+        planet.update();
+    });
+    sunPositionGui.add(params.sunPosition, 'y', -20, 20).onChange((value: number) => {
+        sceneData.sunLight.position.y = value;
+        planet.update();
+    });
+    sunPositionGui.add(params.sunPosition, 'z', -20, 20).onChange((value: number) => {
+        sceneData.sunLight.position.z = value;
+        planet.update();
+    });
 
     // planet settings
     const planetGui = gui.addFolder('Planet settings');

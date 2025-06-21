@@ -7,6 +7,7 @@ export interface SceneData {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
     sky: THREE.Mesh;
+    skySpeed: number;
     sunLight: THREE.DirectionalLight;
     ambientLight: THREE.AmbientLight;
 }
@@ -76,6 +77,7 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
         camera: camera,
         renderer: renderer,
         sky: sky,
+        skySpeed: 0.0005,
         sunLight: sunLight,
         ambientLight: ambientLight
     };
