@@ -32,7 +32,7 @@ export function setupInput(sceneData: SceneData, planet: Planet): InputParams {
         isDragging = true;
         previousMousePosition = { x: event.clientX, y: event.clientY };
     });
-    document.addEventListener('mouseup', (event: MouseEvent) => {
+    document.addEventListener('mouseup', (/* event: MouseEvent */) => {
         isDragging = false;
     });
 

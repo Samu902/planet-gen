@@ -7,10 +7,10 @@ import { setupInput } from './input.ts';
 const { sceneData, planet } = setupScene();
 
 // GUI setup
-const guiParams = setupGUI(sceneData, planet);
+/* const guiParams =  */setupGUI(sceneData, planet);
 
 // input setup
-const inputParams = setupInput(sceneData, planet);
+/* const inputParams =  */setupInput(sceneData, planet);
 
 // start render loop
-render(sceneData);
+render(sceneData, planet);
