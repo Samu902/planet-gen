@@ -7,6 +7,8 @@ export interface SceneData {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
     sky: THREE.Mesh;
+    sunLight: THREE.DirectionalLight;
+    ambientLight: THREE.AmbientLight;
 }
 
 export function setupScene(): { sceneData: SceneData, planet: Planet } {
@@ -43,7 +45,7 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
 
     // directional light as 'sun'
     const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-    sunLight.position.set(-10, 5, 0);
+    sunLight.position.set(-10, 5, 5);
     scene.add(sunLight);
 
     // ambient light to brighten the scene
@@ -73,18 +75,24 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
         scene: scene,
         camera: camera,
         renderer: renderer,
-        sky: sky
+        sky: sky,
+        sunLight: sunLight,
+        ambientLight: ambientLight
     };
 
-    const planet = new Planet();
+    const planet = new Planet(sceneData);
     scene.add(planet.mesh);
 
     return { sceneData, planet };
 }
 
-export function render(sceneData: SceneData): void {
+export function render(sceneData: SceneData, planet: Planet): void {
+    let clock = new THREE.Clock();
     function loop() {
         requestAnimationFrame(loop);
+        if (planet.mesh.material instanceof THREE.RawShaderMaterial && (planet.mesh.material as THREE.RawShaderMaterial).uniforms.time !== undefined) {
+            (planet.mesh.material as THREE.RawShaderMaterial).uniforms.time.value = clock.getElapsedTime();
+        }
         sceneData.renderer.render(sceneData.scene, sceneData.camera);
     }
     loop();
