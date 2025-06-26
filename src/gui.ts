@@ -1,9 +1,11 @@
 import GUI from 'lil-gui';
 import type { SceneData } from './rendering';
 import { Vector3 } from 'three';
-import { Planet, shaders, type ShaderOption } from './planet';
+import { Planet } from './planet';
+import { MaterialManager, type ShaderOption } from './materialManager';
 
 interface GUIParams {
+    // > world params
     camera_position: Vector3;
     rotateSpeed: number;
     sunPosition: Vector3;
@@ -73,7 +75,7 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.heightFactor1 = value;
         planet.update();
     });
-    geometryGui.add(params, 'offset1', 0, 99999).onChange((value: number) => {
+    geometryGui.add(params, 'offset1', 0, 10).onChange((value: number) => {
         planet.offset1 = value;
         planet.update();
     });
@@ -81,11 +83,11 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.tilingFactor2 = value;
         planet.update();
     });
-    geometryGui.add(params, 'heightFactor2', 0.01, 0.25).onChange((value: number) => {
+    geometryGui.add(params, 'heightFactor2', 0.01, 1).onChange((value: number) => {
         planet.heightFactor2 = value;
         planet.update();
     });
-    geometryGui.add(params, 'offset2', 0, 99999).onChange((value: number) => {
+    geometryGui.add(params, 'offset2', 0, 10).onChange((value: number) => {
         planet.offset2 = value;
         planet.update();
     });
@@ -93,16 +95,16 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.tilingFactor3 = value;
         planet.update();
     });
-    geometryGui.add(params, 'heightFactor3', 0.001, 0.025).onChange((value: number) => {
+    geometryGui.add(params, 'heightFactor3', 0.001, 0.25).onChange((value: number) => {
         planet.heightFactor3 = value;
         planet.update();
     });
-    geometryGui.add(params, 'offset3', 0, 99999).onChange((value: number) => {
+    geometryGui.add(params, 'offset3', 0, 10).onChange((value: number) => {
         planet.offset3 = value;
-        planet.update(); //il problema è che la rigenera a caso ad ogni cambiento: serve un seed forse?
+        planet.update();
     });
     const fragmentGui = planetGui.addFolder('Fragment');
-    fragmentGui.add(params, 'shader', Object.keys(shaders)).onChange((value: ShaderOption) => {
+    fragmentGui.add(params, 'shader', MaterialManager.getInstance().getShaderNames()).onChange((value: ShaderOption) => {
         planet.shader = value;
         planet.update();
     });
