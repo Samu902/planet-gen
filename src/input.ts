@@ -56,11 +56,14 @@ export function setupInput(sceneData: SceneData, planet: Planet): InputParams {
 
     let currentZoom = 10;
 
+    // compute zoom based on mouse scrolling and zoom speed, then clamp 
     document.addEventListener("wheel", (event: WheelEvent) => {
-        // compute zoom based on mouse scrolling and zoom speed, then clamp 
-        currentZoom = clamp(currentZoom + Math.sign(event.deltaY) * params.zoomSpeed, params.minZoom, params.maxZoom);
-        sceneData.camera.position.z = currentZoom;
-        event.preventDefault(); // prevent default zoom or scrolling in the window
+        const guiRect = document.getElementsByClassName('lil-gui')[0].getBoundingClientRect();
+
+            if (event.clientX < guiRect.left || event.clientX > guiRect.right || event.clientY < guiRect.top || event.clientY > guiRect.bottom) {
+                currentZoom = clamp(currentZoom + Math.sign(event.deltaY) * params.zoomSpeed, params.minZoom, params.maxZoom);
+                sceneData.camera.position.z = currentZoom;
+            }
     });
 
     return params;
