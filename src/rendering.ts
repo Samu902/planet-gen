@@ -89,12 +89,8 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
 }
 
 export function render(sceneData: SceneData, planet: Planet): void {
-    let clock = new THREE.Clock();
     function loop() {
         requestAnimationFrame(loop);
-        if (planet.mesh.material instanceof THREE.RawShaderMaterial && (planet.mesh.material as THREE.RawShaderMaterial).uniforms.time !== undefined) {
-            (planet.mesh.material as THREE.RawShaderMaterial).uniforms.time.value = clock.getElapsedTime();
-        }
         sceneData.renderer.render(sceneData.scene, sceneData.camera);
     }
     loop();
