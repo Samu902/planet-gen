@@ -1,31 +1,20 @@
 import * as THREE from 'three'
+import { type SceneData } from './rendering'
 import { createNoise3D, type NoiseFunction3D } from 'simplex-noise';
-import type { SceneData } from './rendering';
-import uvVertShader from './shaders/uv.vert';
-import uvFragShader from './shaders/uv.frag';
-import solidVertShader from './shaders/solid.vert';
-import solidFragShader from './shaders/solid.frag';
-import wireframeVertShader from './shaders/wireframe.vert';
-import wireframeFragShader from './shaders/wireframe.frag';
-
-export type ShaderOption = 'uv' | 'solid' | 'wireframe';
-export type ShaderPair = { vert: string, frag: string };
-
-export const shaders: { [key in ShaderOption]: ShaderPair } = {
-    'uv': { vert: uvVertShader, frag: uvFragShader },
-    'solid': { vert: solidVertShader, frag: solidFragShader },
-    'wireframe': { vert: wireframeVertShader, frag: wireframeFragShader }
-};
+import { clamp } from 'three/src/math/MathUtils.js';
+import { MaterialManager, type ShaderOption } from './materialManager';
 
 export class Planet {
+
+    sceneData: SceneData;
 
     radius: number;
     mesh: THREE.Mesh;
 
     noise: NoiseFunction3D;
 
-    tilingFactor1: number = 0.25;
-    heightFactor1: number = 0.25;
+    tilingFactor1: number = 0.4;
+    heightFactor1: number = 0.9;
     offset1: number = 0;
     tilingFactor2: number = 1;
     heightFactor2: number = 0.1;
@@ -34,93 +23,95 @@ export class Planet {
     heightFactor3: number = 0.05;
     offset3: number = 0;
 
-    shader: ShaderOption = Object.keys(shaders)[0] as ShaderOption
+    mm: MaterialManager;
+    shader: ShaderOption;
 
-    constructor(radius: number = 2) {
-        // const loader = new THREE.TextureLoader();
-        // const texture = loader.load('/t.jpg');
+    constructor(sceneData: SceneData, radius: number = 2) {
 
+        this.sceneData = sceneData;
         this.radius = radius;
 
-        const geometry = new THREE.IcosahedronGeometry(this.radius, 10);
-        const material = new THREE.RawShaderMaterial({
-            vertexShader: shaders[this.shader].vert,
-            fragmentShader: shaders[this.shader].frag,
-            glslVersion: THREE.GLSL3
-        });
+        this.mm = MaterialManager.getInstance();
+        this.shader = this.mm.getShaderNames()[4] as ShaderOption
+
+        const geometry = new THREE.IcosahedronGeometry(this.radius, 30);
+        const material = this.mm.getMaterial(this.shader);
 
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(0, 0, 0);
 
-
         this.noise = createNoise3D();
-        const positionAttribute = this.mesh.geometry.attributes.position;
-        const vertex = new THREE.Vector3();
 
-        for (let i = 0; i < positionAttribute.count; i++) {
-            vertex.fromBufferAttribute(positionAttribute, i);
-            let noiseValue1 = this.noise(...vertex.multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
-            let noiseValue2 = this.noise(...vertex.multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
-            let noiseValue3 = this.noise(...vertex.multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
-            vertex.normalize().multiplyScalar(this.radius).multiplyScalar(1 + this.heightFactor1 * noiseValue1 + this.heightFactor2 * noiseValue2 + this.heightFactor3 * noiseValue3);
-            positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
-        }
-
-        positionAttribute.needsUpdate = true;
-        this.mesh.geometry.computeVertexNormals();
+        this.update();
     }
 
     update() {
 
-        //const geometry = new THREE.IcosahedronGeometry(2, 10);
-        //this.mesh.geometry = geometry;
-        switch (this.shader) {
-            case 'solid':
-                this.mesh.material = new THREE.RawShaderMaterial({
-                    vertexShader: shaders[this.shader].vert,
-                    fragmentShader: shaders[this.shader].frag,
-                    glslVersion: THREE.GLSL3,
-                    uniforms: {
-                        customColor: { value: new THREE.Color(0xff0000) }
-                    }
-                });
-                break;
-            case 'wireframe':
-                this.mesh.material = new THREE.RawShaderMaterial({
-                    vertexShader: shaders[this.shader].vert,
-                    fragmentShader: shaders[this.shader].frag,
-                    glslVersion: THREE.GLSL3,
-                    depthTest: false,
-                    transparent: true,
-                    uniforms: {
-                        wireframeColor: { value: new THREE.Color(0xff0000) },
-                        thickness: { value: 0.1 }
-                    }
-                });
-                this.mesh.material = new THREE.MeshStandardMaterial({ color: '#ffffff', wireframe: true });
-                break;
-            default:
-                this.mesh.material = new THREE.RawShaderMaterial({
-                    vertexShader: shaders[this.shader].vert,
-                    fragmentShader: shaders[this.shader].frag,
-                    glslVersion: THREE.GLSL3
-                });
-                break;
-        }
-
-        const positionAttribute = this.mesh.geometry.attributes.position;
+        const positionAttribute = this.mesh.geometry.getAttribute('position');
         const vertex = new THREE.Vector3();
+
+        const seaLevel = 0; // qualunque valore compreso tra -1 e 1
+        const noiseMax1 = 0.05;
 
         for (let i = 0; i < positionAttribute.count; i++) {
             vertex.fromBufferAttribute(positionAttribute, i);
-            let noiseValue1 = this.noise(...vertex.multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
-            let noiseValue2 = this.noise(...vertex.multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
-            let noiseValue3 = this.noise(...vertex.multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
-            vertex.normalize().multiplyScalar(this.radius).multiplyScalar(1 + this.heightFactor1 * noiseValue1 + this.heightFactor2 * noiseValue2 + this.heightFactor3 * noiseValue3);
+
+            let baseNoise = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
+
+            // Appiattiamo tutto ciò che è "sotto il mare"
+            let elevation = clamp(baseNoise, seaLevel, noiseMax1);
+
+            // Aggiungiamo dettagli solo sopra il livello del mare
+            let detail1 = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
+            let detail2 = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
+
+            let displacement = this.heightFactor1 * elevation
+                + this.heightFactor2 * elevation * detail1
+                + this.heightFactor3 * elevation * detail2;
+
+            vertex.normalize().multiplyScalar(this.radius * (1 + displacement));
             positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
         }
 
         positionAttribute.needsUpdate = true;
         this.mesh.geometry.computeVertexNormals();
+
+        let updatedUniforms;
+        switch (this.shader) {
+            case 'uv':
+                break;
+            case 'solid':
+                updatedUniforms = {
+                    lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
+                    customColor: { value: new THREE.Color(0xff0000) }
+                }
+                break;
+            case 'wireframe':
+                break;
+            case 'solid_biomes':
+                updatedUniforms = {
+                    lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
+                    palette: {
+                        value: [
+                            new THREE.Color('#0044aa'), // oceano
+                            new THREE.Color('#228866'), // costa
+                            new THREE.Color('#88cc55'), // prato
+                            new THREE.Color('#aaaa55'), // collina
+                            new THREE.Color('#ffffff')  // montagna
+                        ]
+                    },
+                    minHeight: { value: this.radius - 0.001 },  // Raggio minimo
+                    maxHeight: { value: this.radius + 0.15 }   // Raggio massimo dopo deformazione
+                }
+                break;
+            case 'textured_biomes':
+                updatedUniforms = {
+                    minHeight: { value: this.radius - 0.001 },  // Raggio minimo
+                    maxHeight: { value: this.radius + 0.15 },   // Raggio massimo dopo deformazione
+                    lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
+                }
+                break;
+        }
+        this.mesh.material = MaterialManager.getInstance().getMaterial(this.shader, updatedUniforms);
     }
 }
