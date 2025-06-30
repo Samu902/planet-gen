@@ -4,8 +4,6 @@ import uvVertShader from './shaders/uv.vert';
 import uvFragShader from './shaders/uv.frag';
 import solidVertShader from './shaders/solid.vert';
 import solidFragShader from './shaders/solid.frag';
-import wireframeVertShader from './shaders/wireframe.vert';
-import wireframeFragShader from './shaders/wireframe.frag';
 import solidBiomesVertShader from './shaders/solid_biomes_1.vert';
 import solidBiomesFragShader from './shaders/solid_biomes_1.frag';
 import texturedBiomesVertShader from './shaders/textured_biomes.vert';
@@ -122,17 +120,6 @@ export class MaterialManager {
             }
         });
 
-        // this.wireframeMaterial = new THREE.RawShaderMaterial({
-        //     vertexShader: wireframeVertShader,
-        //     fragmentShader: wireframeFragShader,
-        //     glslVersion: THREE.GLSL3,
-        //     depthTest: false,
-        //     transparent: true,
-        //     uniforms: {
-        //         wireframeColor: { value: new THREE.Color(0xff0000) },
-        //         thickness: { value: 0.1 }
-        //     }
-        // });
         this.wireframeMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', wireframe: true });
 
         this.solidBiomesMaterial = new THREE.RawShaderMaterial({
