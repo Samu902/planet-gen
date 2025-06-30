@@ -6,7 +6,6 @@ import { MaterialManager, type ShaderOption } from './materialManager';
 
 interface GUIParams {
     // > world params
-    camera_position: Vector3;
     rotateSpeed: number;
     sunPosition: Vector3;
     // > planet params
@@ -27,7 +26,7 @@ interface GUIParams {
 export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
     const gui = new GUI();
     const params: GUIParams = {
-        camera_position: new Vector3(0, 5, 10),
+        // > world params
         rotateSpeed: sceneData.skySpeed,
         sunPosition: sceneData.sunLight.position,
         // > planet params
@@ -45,10 +44,6 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         shader: planet.shader
     };
 
-    gui.addColor(params, 'camera_position').onChange((value: Vector3) => {
-        sceneData.camera.position.set(value.x, value.y, value.z)
-    });
-
     gui.add(params, 'rotateSpeed', 0, 0.01);
     const sunPositionGui = gui.addFolder('Sun position');
     sunPositionGui.add(params.sunPosition, 'x', -20, 20).onChange((value: number) => {
@@ -64,8 +59,9 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.update();
     });
 
-    // planet settings
+    // > planet settings
     const planetGui = gui.addFolder('Planet settings');
+    // >> geometry settings
     const geometryGui = planetGui.addFolder('Geometry');
     geometryGui.add(params, 'tilingFactor1', 0.1, 1.25).onChange((value: number) => {
         planet.tilingFactor1 = value;
@@ -103,6 +99,7 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.offset3 = value;
         planet.update();
     });
+    // >> fragment settings
     const fragmentGui = planetGui.addFolder('Fragment');
     fragmentGui.add(params, 'shader', MaterialManager.getInstance().getShaderNames()).onChange((value: ShaderOption) => {
         planet.shader = value;
