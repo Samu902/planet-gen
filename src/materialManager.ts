@@ -4,8 +4,8 @@ import uvVertShader from './shaders/uv.vert';
 import uvFragShader from './shaders/uv.frag';
 import solidVertShader from './shaders/solid.vert';
 import solidFragShader from './shaders/solid.frag';
-import solidBiomesVertShader from './shaders/solid_biomes_1.vert';
-import solidBiomesFragShader from './shaders/solid_biomes_1.frag';
+import solidBiomesVertShader from './shaders/solid_biomes.vert';
+import solidBiomesFragShader from './shaders/solid_biomes.frag';
 import texturedBiomesVertShader from './shaders/textured_biomes.vert';
 import texturedBiomesFragShader from './shaders/textured_biomes.frag';
 
