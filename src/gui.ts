@@ -1,13 +1,13 @@
 import GUI from 'lil-gui';
 import type { SceneData } from './rendering';
-import { Vector3 } from 'three';
+import { Color, Vector3 } from 'three';
 import { Planet } from './planet';
 import { MaterialManager, type ShaderOption } from './materialManager';
 
 interface GUIParams {
     // > world params
-    rotateSpeed: number;
-    sunPosition: Vector3;
+    rotateSpeed: number,
+    sunPosition: Vector3,
     // > planet params
     // >> geometry
     tilingFactor1: number,
@@ -20,7 +20,10 @@ interface GUIParams {
     heightFactor3: number
     offset3: number,
     // >> fragment
-    shader: ShaderOption
+    shader: ShaderOption,
+    color: Color,
+    wind: number,
+    palette: { [key: string]: Color; }
 }
 
 export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
@@ -41,7 +44,10 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         heightFactor3: planet.heightFactor3,
         offset3: planet.offset3,
         // >> fragment
-        shader: planet.shader
+        shader: planet.shader,
+        color: planet.color,
+        wind: planet.wind,
+        palette: planet.palette
     };
 
     gui.add(params, 'rotateSpeed', 0, 0.01);
@@ -102,9 +108,67 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
     // >> fragment settings
     const fragmentGui = planetGui.addFolder('Fragment');
     fragmentGui.add(params, 'shader', MaterialManager.getInstance().getShaderNames()).onChange((value: ShaderOption) => {
+        switch (value) {
+            case 'uv':
+                colorField.hide();
+                windField.hide();
+                paletteGui.hide();
+                break;
+            case 'solid':
+                colorField.show();
+                windField.hide();
+                paletteGui.hide();
+                break;
+            case 'wireframe':
+                colorField.hide();
+                windField.hide();
+                paletteGui.hide();
+                break;
+            case 'solid_biomes':
+                colorField.hide();
+                windField.hide();
+                paletteGui.show();
+                break;
+            case 'textured_biomes':
+                colorField.hide();
+                windField.show();
+                paletteGui.hide();
+                break;
+            default:
+                break;
+        }
         planet.shader = value;
         planet.update();
     });
+    const colorField = fragmentGui.addColor(params, 'color').onChange((value: Color) => {
+        planet.color = value;
+        planet.update();
+    }).hide();
+    const paletteGui = fragmentGui.addFolder('palette').hide();
+    paletteGui.addColor(params.palette, '0').onChange((value: Color) => {
+        planet.palette['0'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '1').onChange((value: Color) => {
+        planet.palette['1'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '2').onChange((value: Color) => {
+        planet.palette['2'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '3').onChange((value: Color) => {
+        planet.palette['3'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '4').onChange((value: Color) => {
+        planet.palette['4'] = value;
+        planet.update();
+    });
+    const windField = fragmentGui.add(params, 'wind', 0, 10).onChange((value: number) => {
+        planet.wind = value;
+        planet.update();
+    }).hide();
 
     function animateRotation() {
         requestAnimationFrame(animateRotation);

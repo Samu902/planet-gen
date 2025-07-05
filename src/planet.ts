@@ -24,7 +24,19 @@ export class Planet {
     offset3: number = 0;
 
     mm: MaterialManager;
+
     shader: ShaderOption;
+
+    color: THREE.Color = new THREE.Color('#ff0000');
+    palette: { [key: string]: THREE.Color; } = {
+        '0': new THREE.Color('#0044aa'), // oceano
+        '1': new THREE.Color('#228866'), // costa
+        '2': new THREE.Color('#88cc55'), // prato
+        '3': new THREE.Color('#aaaa55'), // collina
+        '4': new THREE.Color('#ffffff')  // montagna
+    };
+    wind: number = 1;
+
 
     constructor(sceneData: SceneData, radius: number = 2) {
 
@@ -83,7 +95,7 @@ export class Planet {
             case 'solid':
                 updatedUniforms = {
                     lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
-                    customColor: { value: new THREE.Color(0xff0000) }
+                    customColor: { value: this.color }
                 }
                 break;
             case 'wireframe':
@@ -92,13 +104,7 @@ export class Planet {
                 updatedUniforms = {
                     lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
                     palette: {
-                        value: [
-                            new THREE.Color('#0044aa'), // oceano
-                            new THREE.Color('#228866'), // costa
-                            new THREE.Color('#88cc55'), // prato
-                            new THREE.Color('#aaaa55'), // collina
-                            new THREE.Color('#ffffff')  // montagna
-                        ]
+                        value: Object.values(this.palette)
                     },
                     minHeight: { value: this.radius - 0.001 },  // Raggio minimo
                     maxHeight: { value: this.radius + 0.15 }   // Raggio massimo dopo deformazione
@@ -109,6 +115,7 @@ export class Planet {
                     minHeight: { value: this.radius - 0.001 },  // Raggio minimo
                     maxHeight: { value: this.radius + 0.15 },   // Raggio massimo dopo deformazione
                     lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
+                    wind: { value: this.wind }
                 }
                 break;
         }

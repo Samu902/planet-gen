@@ -130,11 +130,11 @@ export class MaterialManager {
                 lightDirection: { value: new THREE.Vector3() },
                 palette: {
                     value: [
-                        new THREE.Color('#0044aa'),
-                        new THREE.Color('#228866'),
-                        new THREE.Color('#88cc55'),
-                        new THREE.Color('#aaaa55'),
-                        new THREE.Color('#ffffff')
+                        new THREE.Color(),
+                        new THREE.Color(),
+                        new THREE.Color(),
+                        new THREE.Color(),
+                        new THREE.Color()
                     ]
                 },
                 minHeight: { value: 0 },
@@ -161,6 +161,7 @@ export class MaterialManager {
                 minHeight: { value: 0 },
                 maxHeight: { value: 0 },
                 lightDirection: { value: new THREE.Vector3() },
+                wind: { value: 1 }
             }
         });
 
@@ -177,7 +178,6 @@ export class MaterialManager {
     // implements singleton
     static getInstance(): MaterialManager {
         if (MaterialManager.instance == null) {
-            console.log("CREATA INSTANCE")
             MaterialManager.instance = new MaterialManager();
         }
         return MaterialManager.instance;
