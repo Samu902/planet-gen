@@ -10,6 +10,7 @@ export class Planet {
 
     radius: number;
     mesh: THREE.Mesh;
+    skyMesh: THREE.Mesh;
 
     noise: NoiseFunction3D;
 
@@ -37,7 +38,6 @@ export class Planet {
     };
     wind: number = 1;
 
-
     constructor(sceneData: SceneData, radius: number = 2) {
 
         this.sceneData = sceneData;
@@ -51,6 +51,18 @@ export class Planet {
 
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(0, 0, 0);
+
+
+
+        //const geometry = new THREE.IcosahedronGeometry(this.radius, 30).toNonIndexed()
+        const skyGeometry = new THREE.SphereGeometry(this.radius * 1.1, 30, 30);
+        //geometry.computeVertexNormals();
+        const skyMaterial = this.mm.getMaterial('textured_biomes/clouds'); //da cambiare
+
+        this.skyMesh = new THREE.Mesh(skyGeometry, skyMaterial);
+        this.skyMesh.position.set(0, 0, 0);
+        this.skyMesh.visible = false;
+
 
         this.noise = createNoise3D();
 
@@ -120,5 +132,9 @@ export class Planet {
                 break;
         }
         this.mesh.material = MaterialManager.getInstance().getMaterial(this.shader, updatedUniforms);
+        this.skyMesh.material = MaterialManager.getInstance().getMaterial('textured_biomes/clouds', {
+            lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
+            wind: { value: this.wind }
+        })
     }
 }

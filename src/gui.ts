@@ -113,26 +113,31 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
                 colorField.hide();
                 windField.hide();
                 paletteGui.hide();
+                planet.skyMesh.visible = false;
                 break;
             case 'solid':
                 colorField.show();
                 windField.hide();
                 paletteGui.hide();
+                planet.skyMesh.visible = false;
                 break;
             case 'wireframe':
                 colorField.hide();
                 windField.hide();
                 paletteGui.hide();
+                planet.skyMesh.visible = false;
                 break;
             case 'solid_biomes':
                 colorField.hide();
                 windField.hide();
                 paletteGui.show();
+                planet.skyMesh.visible = false;
                 break;
             case 'textured_biomes':
                 colorField.hide();
                 windField.show();
                 paletteGui.hide();
+                planet.skyMesh.visible = true;
                 break;
             default:
                 break;

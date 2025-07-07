@@ -45,8 +45,11 @@ export function setupInput(sceneData: SceneData, planet: Planet): InputParams {
                 const deltaX = event.clientX - previousMousePosition.x;
                 const deltaY = event.clientY - previousMousePosition.y;
 
-                planet.mesh = planet.mesh.rotateOnWorldAxis(new Vector3(0, 1, 0), deltaX * params.rotateSpeed);
-                planet.mesh = planet.mesh.rotateOnWorldAxis(new Vector3(1, 0, 0), deltaY * params.rotateSpeed);
+                planet.mesh.rotateOnWorldAxis(new Vector3(0, 1, 0), deltaX * params.rotateSpeed);
+                planet.mesh.rotateOnWorldAxis(new Vector3(1, 0, 0), deltaY * params.rotateSpeed);
+
+                planet.skyMesh.rotateOnWorldAxis(new Vector3(0, 1, 0), deltaX * params.rotateSpeed);
+                planet.skyMesh.rotateOnWorldAxis(new Vector3(1, 0, 0), deltaY * params.rotateSpeed);
 
                 previousMousePosition.x = event.clientX;
                 previousMousePosition.y = event.clientY;

@@ -84,6 +84,7 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
 
     const planet = new Planet(sceneData);
     scene.add(planet.mesh);
+    scene.add(planet.skyMesh);
 
     return { sceneData, planet };
 }

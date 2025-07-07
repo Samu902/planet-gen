@@ -8,6 +8,8 @@ import solidBiomesVertShader from './shaders/solid_biomes.vert';
 import solidBiomesFragShader from './shaders/solid_biomes.frag';
 import texturedBiomesVertShader from './shaders/textured_biomes.vert';
 import texturedBiomesFragShader from './shaders/textured_biomes.frag';
+import cloudsVertShader from './shaders/clouds.vert';
+import cloudsFragShader from './shaders/clouds.frag';
 
 import water from './assets/water.jpg'; //ignorato -> base color
 import sand from './assets/sand.png';
@@ -26,7 +28,8 @@ const shaderNames = [
     'solid',
     'wireframe',
     'solid_biomes',
-    'textured_biomes'
+    'textured_biomes',
+    'textured_biomes/clouds'
 ] as const;
 
 export type ShaderOption = typeof shaderNames[number]
@@ -55,6 +58,7 @@ export class MaterialManager {
     wireframeMaterial: THREE.MeshStandardMaterial;
     solidBiomesMaterial: THREE.RawShaderMaterial;
     texturedBiomesMaterial: THREE.RawShaderMaterial;
+    cloudsMaterial: THREE.RawShaderMaterial;
 
     private constructor() {
 
@@ -165,12 +169,26 @@ export class MaterialManager {
             }
         });
 
+        this.cloudsMaterial = new THREE.RawShaderMaterial({
+            vertexShader: cloudsVertShader,
+            fragmentShader: cloudsFragShader,
+            glslVersion: THREE.GLSL3,
+            uniforms: {
+                normal0: { value: this.waterNormalTex },
+                time: { value: 0 },
+                lightDirection: { value: new THREE.Vector3() },
+                wind: { value: 1 }
+            },
+            transparent: true
+        });
+
         // --- update time uniform periodically ---
 
         let clock = new THREE.Clock();
         function loop(mm: MaterialManager) {
             requestAnimationFrame(() => loop(mm));
             mm.texturedBiomesMaterial.uniforms.time.value = clock.getElapsedTime();
+            mm.cloudsMaterial.uniforms.time.value = clock.getElapsedTime();
         }
         loop(this);
     }
@@ -203,6 +221,9 @@ export class MaterialManager {
             case 'textured_biomes':
                 material = this.texturedBiomesMaterial;
                 break;
+            case 'textured_biomes/clouds':
+                material = this.cloudsMaterial;
+                break;
             default:
                 material = this.uvMaterial;
         }
@@ -217,7 +238,10 @@ export class MaterialManager {
     }
 
     // get shader names as string array.
-    getShaderNames(): string[] {
+    getShaderNames(onlyPublic: boolean = true): string[] {
+        if (onlyPublic)
+            return Object.values(shaderNames.slice(0, shaderNames.length - 1));
+        
         return Object.values(shaderNames);
     }
 }
