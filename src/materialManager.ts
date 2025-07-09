@@ -187,8 +187,12 @@ export class MaterialManager {
         let clock = new THREE.Clock();
         function loop(mm: MaterialManager) {
             requestAnimationFrame(() => loop(mm));
-            mm.texturedBiomesMaterial.uniforms.time.value = clock.getElapsedTime();
-            mm.cloudsMaterial.uniforms.time.value = clock.getElapsedTime();
+            mm.getShaderNames(false).forEach(name => {
+                const mat = mm.getMaterial(name as ShaderOption);
+                if (mat instanceof THREE.RawShaderMaterial && mat.uniforms.time != undefined) {
+                    mat.uniforms.time.value = clock.getElapsedTime();
+                }
+            })
         }
         loop(this);
     }
