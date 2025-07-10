@@ -53,7 +53,7 @@ void main() {
     }
 
     vec3 normal = normalize(vTBNMatrix * (normalRGB * 2.0 - 1.0));
-    float ambientLight = 0.1;
-    float light = max(dot(normalize(normal), normalize(lightDirection)), 0.0) + ambientLight;
+    float light = max(dot(normalize(normal), normalize(lightDirection)), 0.0);
+    light = mix(0.1, 0.9, light);
     fragColor = vec4(color.rgb * light, 1.0);
 }
