@@ -85,7 +85,7 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.tilingFactor2 = value;
         planet.update();
     });
-    geometryGui.add(params, 'heightFactor2', 0.01, 1).onChange((value: number) => {
+    geometryGui.add(params, 'heightFactor2', 0.01, 0.35).onChange((value: number) => {
         planet.heightFactor2 = value;
         planet.update();
     });
@@ -97,7 +97,7 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
         planet.tilingFactor3 = value;
         planet.update();
     });
-    geometryGui.add(params, 'heightFactor3', 0.001, 0.25).onChange((value: number) => {
+    geometryGui.add(params, 'heightFactor3', 0.001, 0.1).onChange((value: number) => {
         planet.heightFactor3 = value;
         planet.update();
     });
