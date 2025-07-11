@@ -46,7 +46,7 @@ export class Planet {
         this.mm = MaterialManager.getInstance();
         this.shader = this.mm.getShaderNames()[4] as ShaderOption
 
-        const geometry = new THREE.IcosahedronGeometry(this.radius, 30);
+        const geometry = new THREE.SphereGeometry(this.radius, 400, 200);
         const material = this.mm.getMaterial(this.shader);
 
         this.mesh = new THREE.Mesh(geometry, material);
