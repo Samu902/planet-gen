@@ -53,9 +53,7 @@ export class Planet {
         this.mesh.position.set(0, 0, 0);
 
 
-
-        //const geometry = new THREE.IcosahedronGeometry(this.radius, 30).toNonIndexed()
-        const skyGeometry = new THREE.SphereGeometry(this.radius * 1.1, 30, 30);
+        const skyGeometry = new THREE.SphereGeometry(this.radius * 1.1, 20, 20);
         //geometry.computeVertexNormals();
         const skyMaterial = this.mm.getMaterial('textured_biomes/clouds'); //da cambiare
 
