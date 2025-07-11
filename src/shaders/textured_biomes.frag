@@ -30,10 +30,10 @@ void main() {
 
     vec4 color;
 
-    float limit01 = 0.15;
-    float limit12 = 0.5;
+    float limit01 = 0.05;
+    float limit12 = 0.2;
     float limit23 = 0.75;
-    float limit34 = 1.0;
+    float limit34 = 0.85;
 
     vec3 normalRGB;
     float t = clamp((vElevation - minHeight) / (maxHeight - minHeight), 0.0, 1.0);
@@ -46,12 +46,12 @@ void main() {
         normalRGB = mix(n0, texture(normal1, uv).rgb, f);
     } else if (t < limit12) {
         float f = (t - limit01) / (limit12 - limit01);
-        color = mix(texture(tex1, uv * 5.0), texture(tex2, uv * 10.0), f);
-        normalRGB = mix(texture(normal1, uv).rgb, texture(normal2, uv * 10.0).rgb, f);
+        color = mix(texture(tex1, uv * 5.0), texture(tex2, uv * 7.5), f);
+        normalRGB = mix(texture(normal1, uv).rgb, texture(normal2, uv * 7.5).rgb, f);
     } else if (t < limit23) {
         float f = (t - limit12) / (limit23 - limit12);
-        color = mix(texture(tex2, uv * 10.0), texture(tex3, uv * 2.0), f);
-        normalRGB = mix(texture(normal2, uv * 10.0).rgb, texture(normal3, uv * 2.0).rgb, f);
+        color = mix(texture(tex2, uv * 7.5), texture(tex3, uv * 2.0), f);
+        normalRGB = mix(texture(normal2, uv * 7.5).rgb, texture(normal3, uv * 2.0).rgb, f);
     } else if (t < limit34) {
         float f = (t - limit23) / (limit34 - limit23);
         color = mix(texture(tex3, uv * 2.0), texture(tex4, uv), f);
