@@ -97,6 +97,7 @@ export class Planet {
 
         positionAttribute.needsUpdate = true;
         this.mesh.geometry.computeVertexNormals();
+        this.mesh.geometry.computeTangents();
 
         let updatedUniforms;
         switch (this.shader) {
@@ -116,14 +117,14 @@ export class Planet {
                     palette: {
                         value: Object.values(this.palette)
                     },
-                    minHeight: { value: this.radius - 0.001 },  // Raggio minimo
-                    maxHeight: { value: this.radius + 0.15 }   // Raggio massimo dopo deformazione
+                    minHeight: { value: this.radius - 0.001 },
+                    maxHeight: { value: this.radius * (1 + maxLevel) }
                 }
                 break;
             case 'textured_biomes':
                 updatedUniforms = {
-                    minHeight: { value: this.radius - 0.001 },  // Raggio minimo
-                    maxHeight: { value: this.radius + 0.15 },   // Raggio massimo dopo deformazione
+                    minHeight: { value: this.radius - 0.001 },
+                    maxHeight: { value: this.radius * (1 + maxLevel) },
                     lightDirection: { value: this.sceneData.sunLight.position.clone().multiplyScalar(1).normalize() },
                     wind: { value: this.wind }
                 }
