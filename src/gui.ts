@@ -108,7 +108,42 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
     // >> fragment settings
     const fragmentGui = planetGui.addFolder('Fragment');
     fragmentGui.add(params, 'shader', MaterialManager.getInstance().getShaderNames()).onChange((value: ShaderOption) => {
-        switch (value) {
+        controlVisibility(value);
+        planet.shader = value;
+        planet.update();
+    });
+    const colorField = fragmentGui.addColor(params, 'color').onChange((value: Color) => {
+        planet.color = value;
+        planet.update();
+    }).hide();
+    const paletteGui = fragmentGui.addFolder('palette').hide();
+    paletteGui.addColor(params.palette, '0').onChange((value: Color) => {
+        planet.palette['0'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '1').onChange((value: Color) => {
+        planet.palette['1'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '2').onChange((value: Color) => {
+        planet.palette['2'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '3').onChange((value: Color) => {
+        planet.palette['3'] = value;
+        planet.update();
+    });
+    paletteGui.addColor(params.palette, '4').onChange((value: Color) => {
+        planet.palette['4'] = value;
+        planet.update();
+    });
+    const windField = fragmentGui.add(params, 'wind', 0, 10).onChange((value: number) => {
+        planet.wind = value;
+        planet.update();
+    }).hide();
+
+    function controlVisibility(shader: ShaderOption) {
+        switch (shader) {
             case 'uv':
                 colorField.hide();
                 windField.hide();
@@ -142,38 +177,8 @@ export function setupGUI(sceneData: SceneData, planet: Planet): GUIParams {
             default:
                 break;
         }
-        planet.shader = value;
-        planet.update();
-    });
-    const colorField = fragmentGui.addColor(params, 'color').onChange((value: Color) => {
-        planet.color = value;
-        planet.update();
-    }).hide();
-    const paletteGui = fragmentGui.addFolder('palette').hide();
-    paletteGui.addColor(params.palette, '0').onChange((value: Color) => {
-        planet.palette['0'] = value;
-        planet.update();
-    });
-    paletteGui.addColor(params.palette, '1').onChange((value: Color) => {
-        planet.palette['1'] = value;
-        planet.update();
-    });
-    paletteGui.addColor(params.palette, '2').onChange((value: Color) => {
-        planet.palette['2'] = value;
-        planet.update();
-    });
-    paletteGui.addColor(params.palette, '3').onChange((value: Color) => {
-        planet.palette['3'] = value;
-        planet.update();
-    });
-    paletteGui.addColor(params.palette, '4').onChange((value: Color) => {
-        planet.palette['4'] = value;
-        planet.update();
-    });
-    const windField = fragmentGui.add(params, 'wind', 0, 10).onChange((value: number) => {
-        planet.wind = value;
-        planet.update();
-    }).hide();
+    }
+    controlVisibility(params.shader);
 
     function animateRotation() {
         requestAnimationFrame(animateRotation);
