@@ -31,10 +31,10 @@ export class Planet {
     color: THREE.Color = new THREE.Color('#ff0000');
     palette: { [key: string]: THREE.Color; } = {
         '0': new THREE.Color('#0044aa'), // oceano
-        '1': new THREE.Color('#228866'), // costa
+        '1': new THREE.Color('#e6d153'), // sabbia
         '2': new THREE.Color('#88cc55'), // prato
-        '3': new THREE.Color('#aaaa55'), // collina
-        '4': new THREE.Color('#ffffff')  // montagna
+        '3': new THREE.Color('#bfbf96'), // roccia
+        '4': new THREE.Color('#ffffff')  // neve
     };
     wind: number = 1;
 
