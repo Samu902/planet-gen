@@ -84,13 +84,13 @@ export class Planet {
 
             // appiattisce tutto ciò che è "sotto il mare" e sopra il livello "pianura"
             let plainNoiseLarge = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
-            let plainNoiseSmall = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1 * 4).addScalar(this.offset1).toArray());
+            let plainNoiseSmall = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1 * 6).addScalar(this.offset1).toArray());
             let plainElevation = clamp(clamp((plainNoiseLarge * 0.8 + plainNoiseSmall * 0.2), seaLevel, plainCut), seaLevel, plainLevel);
             let nearCoastFactor = clamp((plainNoiseLarge * 0.8 + plainNoiseSmall * 0.2), seaLevel, plainCut) / (plainCut - seaLevel + 0.02);
 
             // aggiunge dettagli solo sopra il livello del mare e non sulla costa
             let mountainNoiseLarge = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
-            let mountainNoiseSmall = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor2 * 4).addScalar(this.offset2).toArray());
+            let mountainNoiseSmall = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor2 * 6).addScalar(this.offset2).toArray());
             let mountainElevation = clamp((mountainNoiseLarge * 0.7 + clamp(mountainNoiseSmall, 0.3, 0.9) * 0.3), mountainLevel * 0.1, 1) * mountainLevel;
 
             let detailNoise = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
