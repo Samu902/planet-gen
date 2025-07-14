@@ -46,21 +46,18 @@ export class Planet {
         this.mm = MaterialManager.getInstance();
         this.shader = this.mm.getShaderNames()[4] as ShaderOption
 
+        // planet mesh
         const geometry = new THREE.SphereGeometry(this.radius, 400, 200);
         const material = this.mm.getMaterial(this.shader);
-
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(0, 0, 0);
 
-
+        // sky mesh
         const skyGeometry = new THREE.SphereGeometry(this.radius * 1.1, 20, 20);
-        //geometry.computeVertexNormals();
-        const skyMaterial = this.mm.getMaterial('textured_biomes/clouds'); //da cambiare
-
+        const skyMaterial = this.mm.getMaterial('textured_biomes/clouds');
         this.skyMesh = new THREE.Mesh(skyGeometry, skyMaterial);
         this.skyMesh.position.set(0, 0, 0);
         this.skyMesh.visible = false;
-
 
         this.noise = createNoise3D();
 
@@ -97,7 +94,7 @@ export class Planet {
             let detailNoise = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor3).addScalar(this.offset3).toArray());
             let detailElevation = clamp(detailNoise, detailLevel * 0.2, 0.6);
 
-            let displacement = this.heightFactor1 * plainElevation
+            let displacement = this.heightFactor1 * plainElevation * coastFactor
                 + (plainElevation > 0 ? this.heightFactor2 * mountainElevation * coastFactor : 0)
                 + (plainElevation > 0 ? this.heightFactor3 * detailElevation * coastFactor: 0);
 
