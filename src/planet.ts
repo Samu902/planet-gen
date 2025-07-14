@@ -86,7 +86,8 @@ export class Planet {
             let plainNoiseLarge = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1).addScalar(this.offset1).toArray());
             let plainNoiseSmall = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor1 * 6).addScalar(this.offset1).toArray());
             let plainElevation = clamp(clamp((plainNoiseLarge * 0.8 + plainNoiseSmall * 0.2), seaLevel, plainCut), seaLevel, plainLevel);
-            let nearCoastFactor = clamp((plainNoiseLarge * 0.8 + plainNoiseSmall * 0.2), seaLevel, plainCut) / (plainCut - seaLevel + 0.02);
+            let coastPadding = 0.25;
+            let coastFactor = clamp((plainNoiseLarge * 0.8 + plainNoiseSmall * 0.2), seaLevel, plainCut + coastPadding) / (plainCut - seaLevel + coastPadding);
 
             // aggiunge dettagli solo sopra il livello del mare e non sulla costa
             let mountainNoiseLarge = this.noise(...vertex.clone().multiplyScalar(this.tilingFactor2).addScalar(this.offset2).toArray());
@@ -97,8 +98,8 @@ export class Planet {
             let detailElevation = clamp(detailNoise, detailLevel * 0.2, 0.6);
 
             let displacement = this.heightFactor1 * plainElevation
-                + (plainElevation > 0 ? this.heightFactor2 * mountainElevation * nearCoastFactor : 0)
-                + (plainElevation > 0 ? this.heightFactor3 * detailElevation * nearCoastFactor: 0);
+                + (plainElevation > 0 ? this.heightFactor2 * mountainElevation * coastFactor : 0)
+                + (plainElevation > 0 ? this.heightFactor3 * detailElevation * coastFactor: 0);
 
             vertex.normalize().multiplyScalar(this.radius * (1 + displacement));
             positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);

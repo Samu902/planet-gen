@@ -15,7 +15,7 @@ void main() {
     float t = clamp((vElevation - minHeight) / (maxHeight - minHeight), 0.0, 1.0);
 
     float limit01 = 0.05;
-    float limit12 = 0.2;
+    float limit12 = 0.25;
     float limit23 = 0.75;
     float limit34 = 0.85;
 

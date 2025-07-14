@@ -31,7 +31,7 @@ void main() {
     vec4 color;
 
     float limit01 = 0.05;
-    float limit12 = 0.2;
+    float limit12 = 0.25;
     float limit23 = 0.75;
     float limit34 = 0.85;
 
@@ -64,6 +64,7 @@ void main() {
 
     float light = max(dot(normalize(normal), normalize(lightDirection)), 0.0);
     light = mix(0.1, 0.9, light);
+    //color = vec4(0.8, 0.8, 0.8, 1.0);
 
     fragColor = vec4(color.rgb * light, 1.0);
 }
