@@ -89,7 +89,7 @@ export function setupScene(): { sceneData: SceneData, planet: Planet } {
     return { sceneData, planet };
 }
 
-export function render(sceneData: SceneData, planet: Planet): void {
+export function render(sceneData: SceneData, _: Planet): void {
     function loop() {
         requestAnimationFrame(loop);
         sceneData.renderer.render(sceneData.scene, sceneData.camera);
